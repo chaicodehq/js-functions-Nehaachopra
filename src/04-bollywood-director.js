@@ -46,12 +46,54 @@
  */
 export function createDialogueWriter(genre) {
   // Your code here
+  const templates = {
+    action: (hero, villain) =>
+      `${hero} says: 'Tujhe toh main dekh lunga, ${villain}!'`,
+
+    romance: (hero, villain) =>
+      `${hero} whispers: '${villain}, tum mere liye sab kuch ho'`,
+
+    comedy: (hero, villain) =>
+      `${hero} laughs: '${villain} bhai, kya kar rahe ho yaar!'`,
+
+    drama: (hero, villain) =>
+      `${hero} cries: '${villain}, tune mera sab kuch cheen liya!'`
+  };
+
+  if (!(genre in templates)) return null;
+
+  return function(hero, villain) {
+    if (!hero || !villain) return "...";
+    return templates[genre](hero, villain);
+  };
 }
 
 export function createTicketPricer(basePrice) {
   // Your code here
+  if (Number.isNaN(basePrice) || basePrice <= 0) return null;
+
+  return function(seatType, isWeekend = false) {
+    let finalPrice = basePrice;
+    if (seatType === "silver") finalPrice *= 1
+    else if (seatType === "gold") finalPrice *= 1.5
+    else if (seatType === "platinum") finalPrice *= 2
+    else return null;
+
+    if (isWeekend) finalPrice *= 1.3;
+    return Math.round(finalPrice);
+  }
 }
 
 export function createRatingCalculator(weights) {
   // Your code here
+  if (!weights || typeof weights !== "object") return null;
+
+  return function (scores) {
+    if (typeof scores !== "object") return null;
+    let weightedAverage = 0;
+    for (let category in weights) {
+      weightedAverage += weights[category] * scores[category];
+    }
+    return Math.round(weightedAverage * 10) / 10;
+  }
 }
