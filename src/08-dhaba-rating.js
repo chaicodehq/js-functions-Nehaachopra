@@ -46,16 +46,66 @@
  */
 export function createFilter(field, operator, value) {
   // Your code here
+  const operators= [">", "<", ">=", "<=", "==="];
+  if (!operators.includes(operator)) return function() {return false}
+
+  return function(obj) {
+    if (!obj || typeof obj !== "object") return false;
+
+    const fieldName = obj[field];
+    
+    switch (operator) {
+      case ">": return fieldName > value;
+      case "<": return fieldName < value;
+      case ">=": return fieldName >= value;
+      case "<=": return fieldName <= value;
+      case "===": return fieldName === value;
+      default: return false;
+    }
+  }
 }
 
 export function createSorter(field, order = "asc") {
   // Your code here
+  return function (a, b) {
+    const valA = a[field];
+    const valB = b[field];
+
+    if (typeof valA === "number" && typeof valB === "number") {
+      return order === "asc" ? valA - valB : valB - valA;
+    }
+
+    const comparison = String(valA).localeCompare(String(valB));
+    return order === "asc" ? comparison : -comparison;
+  }
 }
 
 export function createMapper(fields) {
   // Your code here
+  if (!Array.isArray(fields)) {
+    return function () { return {}; };
+  }
+
+  return function(obj) {
+    if (!obj || typeof obj !== "object") return {};
+
+    let newObj = {};
+    fields.forEach(element => {
+      if (element in obj) {
+        newObj[element] = obj[element]
+      }
+    });
+    return newObj;
+  }
 }
 
 export function applyOperations(data, ...operations) {
   // Your code here
+  if (!Array.isArray(data)) return []
+
+  let arr = data;
+  operations.forEach(op => {
+    arr = op(arr);
+  })
+  return arr;
 }
