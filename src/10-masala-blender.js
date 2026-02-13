@@ -54,28 +54,52 @@
  */
 export function pipe(...fns) {
   // Your code here
+  if (fns.length < 1) return function(x) {return x}
+
+  return (x) => {
+    return fns.reduce((value, fn) => fn(value), x);
+  }
 }
 
 export function compose(...fns) {
   // Your code here
+  if (fns.length < 1) return function(x) {return x}
+
+  return (x) => {
+    return fns.reduceRight((value, fn) => fn(value), x)
+  }
 }
 
 export function grind(spice) {
   // Your code here
+  if (!spice || typeof spice !== "object") return {}
+  return { ...spice, form: "powder" }
 }
 
 export function roast(spice) {
   // Your code here
+  if (!spice || typeof spice !== "object") return {}
+  return { ...spice, roasted: true, aroma: "strong" }
 }
 
 export function mix(spice) {
   // Your code here
+  if (!spice || typeof spice !== "object") return {}
+  return { ...spice, mixed: true }
 }
 
 export function pack(spice) {
   // Your code here
+  if (!spice || typeof spice !== "object") return {}
+  return { ...spice, packed: true, label: `${spice.name} Masala` }
 }
 
 export function createRecipe(steps) {
   // Your code here
+  if (!Array.isArray(steps) || steps.length < 1) return (x) => {return x}
+
+  const validFunctions = {grind, roast, mix, pack};
+  const fns = steps.filter(step => validFunctions[step]).map(step => validFunctions[step])
+
+  return pipe(...fns)
 }
